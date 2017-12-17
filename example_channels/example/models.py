@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from django.utils.decorators import classproperty
+from django.utils.decorators import classonlymethod
 
 ##User = get_user_model()
 
@@ -54,7 +54,7 @@ class Message(models.Model):
     class Meta:
         ordering = ('-timestamp', )
         
-    @classproperty
-    def top_messages(self):
-        return self.objects.all()[:10]     
+    @classonlymethod
+    def top_messages(self, room):
+        return self.objects.filter(room=room).all()[:10]     
     

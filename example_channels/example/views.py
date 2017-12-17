@@ -60,10 +60,12 @@ class ChatRoomView(RoomOwnerMixins, CreateView):
     
     def get_context_data(self, **kwargs):
         ctx = super(ChatRoomView, self).get_context_data(**kwargs)
-        ctx['messages'] = Message.top_messages
+        
         label = self.kwargs.get('label')
         print 'label:', label
-        ctx['room'] = Room.objects.get(label=label)
+        room = Room.objects.get(label=label)
+        ctx['room'] = room
+        ctx['messages'] = Message.top_messages(room)
         
         return ctx
     
