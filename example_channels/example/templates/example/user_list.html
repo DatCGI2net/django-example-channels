@@ -1,8 +1,7 @@
 {% extends 'example/_base.html' %}
 
 {% block content %}
-  <a href="{% url 'example:log_out' %}">Log out</a>
-  <br>
+  
   <ul>
     {% for user in users %}
       <!-- NOTE: We escape HTML to prevent XSS attacks. -->

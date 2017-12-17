@@ -3,10 +3,71 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
+from django.views.generic.edit import CreateView, UpdateView
+from example.forms import RoomCreateForm, RoomInviteUserForm, ChatRoomForm
+from django.urls.base import reverse_lazy
+from django.utils.decorators import method_decorator
+from example.models import Message, Room
 
 
 User = get_user_model()
 
+login_required_decorators = (login_required(login_url='/log_in/'), )
+
+APP_NAME = 'example'
+
+class RoomOwnerMixins(object):
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        print('form.instance:', form.instance)
+        return super(RoomOwnerMixins, self).form_valid(form)
+    
+    def form_invalid(self, form):
+        print('form invalid:', form)
+        return super(RoomOwnerMixins, self).form_invalid(form)
+    
+    def get_success_url(self):
+        if self.object and self.object.label:
+            label = self.object.label
+        else:
+            label = kwargs=self.request.POST.get('label')
+            
+        return reverse('{0}:chatroom'.format(APP_NAME), kwargs={'label':label} )
+        
+    
+@method_decorator(login_required_decorators, name='dispatch') 
+class RoomCreateView(RoomOwnerMixins, CreateView):
+    form_class = RoomCreateForm
+    #success_url = reverse_lazy('example:chatroom')
+    template_name = '{0}/createroom.html'.format(APP_NAME)
+    
+    
+        
+    
+    
+@method_decorator(login_required_decorators, name='dispatch') 
+class RoomInviteUserView(RoomOwnerMixins, UpdateView):
+    model = Room
+    fields = ('users', )
+    
+    
+@method_decorator(login_required_decorators, name='dispatch')    
+class ChatRoomView(RoomOwnerMixins, CreateView):
+    form_class =ChatRoomForm
+    ##success_url = reverse_lazy('example:chatroom')
+    template_name = '{0}/chatroom.html'.format(APP_NAME)
+    
+    
+    def get_context_data(self, **kwargs):
+        ctx = super(ChatRoomView, self).get_context_data(**kwargs)
+        ctx['messages'] = Message.top_messages
+        label = self.kwargs.get('label')
+        print 'label:', label
+        ctx['room'] = Room.objects.get(label=label)
+        
+        return ctx
+    
+    
 
 @login_required(login_url='/log_in/')
 def user_list(request):

@@ -25,7 +25,7 @@ SECRET_KEY = 'ie(7l3+psd-5k!(x!h84fn7i-vm$)!=^&3y4c-(*agj75!632k'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.0.15']
 
 
 # Application definition
@@ -120,6 +120,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+print 'STATIC_ROOT:', STATIC_ROOT
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 CHANNEL_LAYERS = {
     'default': {

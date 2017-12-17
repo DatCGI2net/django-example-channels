@@ -1,0 +1,11 @@
+{% extends 'example/_base.html' %}
+
+{% block content %}
+  <form action="{% url 'example:inviteuser' object.id %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    
+    <button type="submit">Join Room</button>
+    
+  </form>
+{% endblock content %}

@@ -1,0 +1,45 @@
+{% extends 'example/_base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+  
+  <h1>{{ room.label }}</h1>
+  <p class="quiet">
+    Anyone with this URL can join the room and chat: 
+    <code>{{ request.scheme }}://{{ request.get_host }}{{ request.path }}</code> 
+  </p>
+  <div class="quite">
+  <label>Users:</label><span class="card">{{room.owner}}</span>
+  {%for user in room.users.all %}
+  <span class="card">{{user}}</span>
+  {%endfor%}
+<span class="card"><a href="{%url 'example:inviteuser' room.id %}">Invite user</a></span>
+  
+  </div>
+  
+  
+    <table id="chat">
+      <tbody>
+        {% for message in messages %}
+          <tr>
+            <td>{{ message.formatted_timestamp }}</td>
+            <td>{{ message.room }} - {{ message.owner }}</td>
+            <td>{{ message.message }}</td>
+          </tr> 
+        {% endfor %}
+      </tbody>
+      
+    </table>
+  <form id="chatform">
+    <div class="form-group">
+    {{form}}
+    </div>
+    <button type="submit" id="go">Say it</button>
+  </form>
+{% endblock content %}
+
+{% block script %}
+  
+  
+  <script type="text/javascript" src='{% static "chat.js" %}?v=1.07'></script>
+{% endblock script %}
